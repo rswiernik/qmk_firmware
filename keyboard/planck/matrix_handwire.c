@@ -133,7 +133,7 @@ uint8_t matrix_key_count(void)
     }
     return count;
 }
-
+/*
 static void init_cols(void)
 {
     DDRB &= ~(1<<6 | 1<<5 | 1<<4);
@@ -187,6 +187,78 @@ static void select_row(uint8_t row)
         case 3:
             DDRB  |= (1<<3);
             PORTB &= ~(1<<3);
+            break;
+        
+    }
+}
+*/
+//
+// Planck PCB Rev 1 Pin Assignments
+//
+// Column: 0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11
+// Pin:    F1, F0, B0, C7, F4, F5, F6, F7, D4, D6, B4, D7
+//
+
+static void init_cols(void)
+{
+    DDRB &= ~(1<<1 | 1<<2 | 1<<3 | 1<<4 | 1<<5 | 1<<6 );
+    PORTB |= (1<<1 | 1<<2 | 1<<3 | 1<<4 | 1<<5 | 1<<6 );
+    DDRD &= ~(1<<0 | 1<<1 | 1<<2 | 1<<3);
+    PORTD |= (1<<0 | 1<<1 | 1<<2 | 1<<3); 
+    DDRF &= ~(1<<1 | 1<<4 | 1<<5 | 1<<6 | 1<<7);
+    PORTF |= (1<<1 | 1<<4 | 1<<5 | 1<<6 | 1<<7);
+    
+}
+
+static matrix_row_t read_cols(void)
+{
+  return (PINB&(1<<1) ? 0 : (1<<0)) |
+         (PINB&(1<<2) ? 0 : (1<<1)) |
+         (PINB&(1<<3) ? 0 : (1<<2)) |
+         (PINB&(1<<7) ? 0 : (1<<3)) |
+         (PIND&(1<<0) ? 0 : (1<<4)) |
+         (PINF&(1<<7) ? 0 : (1<<5)) |
+         (PINB&(1<<5) ? 0 : (1<<6)) |
+         (PINB&(1<<4) ? 0 : (1<<7)) |
+         (PINB&(1<<6) ? 0 : (1<<8)) |
+         (PIND&(1<<1) ? 0 : (1<<9)) |
+         (PIND&(1<<2) ? 0 : (1<<10)) |
+         (PIND&(1<<3) ? 0 : (1<<11));
+         
+}
+
+static void unselect_rows(void)
+{
+    DDRF &= ~(1<<1 | 1<<4 | 1<<5 | 1<<6);
+    PORTF |= (1<<1 | 1<<4 | 1<<5 | 1<<6);
+    
+}
+
+//
+// Planck PCB Rev 1 Pin Assignments
+//
+// Row: 0,  1,  2,  3
+// Pin: D0, D5, B5, B6
+//
+
+static void select_row(uint8_t row)
+{
+    switch (row) {
+        case 0:
+            DDRF  |= (1<<1);
+            PORTF &= ~(1<<1);
+            break;
+        case 1:
+            DDRF  |= (1<<4);
+            PORTF &= ~(1<<4);
+            break;
+        case 2:
+            DDRF  |= (1<<5);
+            PORTF &= ~(1<<5);
+            break;
+        case 3:
+            DDRF  |= (1<<6);
+            PORTF &= ~(1<<6);
             break;
         
     }
